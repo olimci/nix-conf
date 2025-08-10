@@ -14,7 +14,16 @@
     go gh fd ripgrep jq tree magic-wormhole
     thefuck git wget curl gnupg direnv python3
     nodejs unzip python312 uv
+
+    anki
+    brave
+    discord
+    jetbrains.goland
+    signal-desktop
+    spotify
+    tailscale
   ];
+
 
   programs.git = {
     enable     = true;

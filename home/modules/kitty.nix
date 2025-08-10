@@ -24,7 +24,6 @@
       disable_ligatures = "never";
     }
     // lib.optionalAttrs pkgs.stdenv.isDarwin {
-      macos_option_as_alt = "both";
       macos_hide_from_tasks = "yes";
       macos_quit_when_last_window_closed = "no";
     };
