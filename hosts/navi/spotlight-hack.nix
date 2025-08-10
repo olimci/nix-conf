@@ -1,34 +1,83 @@
 { ... }:
 
+let
+  # If you know your primary user in nix-darwin, set this once and we’ll use it
+  user = config.users.primaryUser.name or null;
+  userHome =
+    if user != null then config.users.users.${user}.home else "$HOME";
+  hmApps = "${userHome}/Applications/Home Manager Apps";
+in
 {
-  # initial copy at rebuild (unchanged)
+  # Initial copy at rebuild (covers both sources)
   system.activationScripts.copyNixApps.text = ''
     set -euo pipefail
-    SRC="/Applications/Nix Apps"
+
     DEST="/Applications/Nix"
+    SRC_SYS="/Applications/Nix Apps"
+    SRC_HM='${hmApps}'
+
     mkdir -p "$DEST"
-    if [ -d "$SRC" ]; then
-      /usr/bin/rsync -a --include='*/' --include='*.app/***' --exclude='*' "$SRC/" "$DEST/"
-    fi
+
+    rsync -a --include='*/' --include='*.app/***' --exclude='*' --ignore-missing-args \
+      "$SRC_SYS/" "$DEST/" 2>/dev/null || true
+
+    rsync -a --include='*/' --include='*.app/***' --exclude='*' --ignore-missing-args \
+      "$SRC_HM/" "$DEST/" 2>/dev/null || true
+
     /usr/bin/mdimport "$DEST" || true
-    /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$DEST"/*.app || true
+
+    # Robust lsregister (only if there are .app bundles)
+    if /usr/bin/find "$DEST" -maxdepth 1 -type d -name '*.app' -print -quit | grep -q .; then
+      while IFS= read -r -d '' app; do
+        /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$app" || true
+      done < <(/usr/bin/find "$DEST" -maxdepth 1 -type d -name '*.app' -print0)
+    fi
   '';
 
-  # user LaunchAgent (note the path and serviceConfig)
   launchd.user.agents."nix-apps-sync" = {
-    # You can use script OR command; script is convenient for sh blocks
+    # Single script handles both sources
     script = ''
-      /usr/bin/rsync -a --include='*/' --include='*.app/***' --exclude='*' "/Applications/Nix Apps/" "/Applications/Nix/" && \
-      /usr/bin/mdimport "/Applications/Nix" && \
-      /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f /Applications/Nix/*.app
+      set -euo pipefail
+
+      DEST="/Applications/Nix"
+      SRC_SYS="/Applications/Nix Apps"
+      SRC_HM='${hmApps}'
+
+      mkdir -p "$DEST"
+
+      rsync -a --include='*/' --include='*.app/***' --exclude='*' --ignore-missing-args \
+        "$SRC_SYS/" "$DEST/" 2>/dev/null || true
+
+      rsync -a --include='*/' --include='*.app/***' --exclude='*' --ignore-missing-args \
+        "$SRC_HM/" "$DEST/" 2>/dev/null || true
+
+      /usr/bin/mdimport "$DEST" || true
+
+      if /usr/bin/find "$DEST" -maxdepth 1 -type d -name '*.app' -print -quit | grep -q .; then
+        while IFS= read -r -d '' app; do
+          /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$app" || true
+        done < <(/usr/bin/find "$DEST" -maxdepth 1 -type d -name '*.app' -print0)
+      fi
     '';
 
     serviceConfig = {
       RunAtLoad = true;
-      WatchPaths = [ "/Applications/Nix Apps" ];
+
+      # Watch both app roots. IMPORTANT: Use an absolute home path here.
+      # If you can't/don't want to resolve the home path in Nix, also keep StartInterval below.
+      WatchPaths = [
+        "/Applications/Nix Apps"
+        # This resolves to an absolute path via nix-darwin's users config:
+        "${userHome}/Applications/Home Manager Apps"
+      ];
+
+      # Safety net: also poll occasionally to catch HM symlink flips that
+      # don't always fire WatchPaths (e.g. if only the symlink target changes).
+      StartInterval = 60; # seconds (tweak if you want less/more frequent)
+
       StandardOutPath = "/tmp/nix-apps-sync.out";
       StandardErrorPath = "/tmp/nix-apps-sync.err";
-      # KeepAlive = true;  # optional
+      # KeepAlive = true;  # optional, not usually needed with WatchPaths+StartInterval
     };
   };
 }
