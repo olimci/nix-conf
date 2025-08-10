@@ -21,6 +21,4 @@
 
     extraLuaConfig = builtins.readFile ./neovim/init.lua;
   };
-
-  home.file.".config/nvim/lua/colors/pochi.lua".source = ./neovim/pochi.lua;
 }

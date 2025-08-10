@@ -37,11 +37,11 @@
     };
 
     extraConfig = ''
-      include pochi.conf
+      include theme.conf
     '';
   };
 
-  home.file.".config/kitty/pochi.conf".source = ./kitty/pochi.conf;
+  home.file.".config/kitty/theme.conf".source = ./kitty/mocha.conf;
 
   home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
