@@ -2,13 +2,19 @@
 { lib, pkgs, config, ... }:
 let
   cfg = config.my.tailscale;
+
+  tailscaleUpFlags =
+    (lib.optional cfg.useSSH "--ssh")
+    ++ (lib.optional cfg.acceptRoutes "--accept-routes")
+    ++ (lib.optional cfg.advertiseExitNode "--advertise-exit-node")
+    ++ cfg.extraUpFlags;
 in
 {
   options.my.tailscale = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Enable Tailscale (both NixOS and nix-darwin).";
+      description = "Enable Tailscale (NixOS and nix-darwin).";
     };
 
     useSSH = lib.mkOption {
@@ -38,61 +44,45 @@ in
     extraDaemonFlags = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [];
-      description = "Extra flags to pass to `tailscaled`.";
+      description = "Extra flags to pass to `tailscaled` (NixOS).";
     };
 
     authKeyFile = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
-      description = "Path to a file containing a Tailscale auth key (used on first start).";
+      description = "Path to a file containing a Tailscale auth key (NixOS, first start).";
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ pkgs.tailscale ];
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    {
+      environment.systemPackages = [ pkgs.tailscale ];
+    }
 
-    # Common flag construction for both platforms
-    systemd.services = {}; # no-op on darwin, keeps eval happy
-    assertions = [];
-
-    # Build up the tailscale up flags from options
-    _module.args.tailscaleUpFlags =
-      (if cfg.useSSH then [ "--ssh" ] else [])
-      ++ (if cfg.acceptRoutes then [ "--accept-routes" ] else [])
-      ++ (if cfg.advertiseExitNode then [ "--advertise-exit-node" ] else [])
-      ++ cfg.extraUpFlags;
-
-    #### nix-darwin ####
-    # maps to launchd service
-    darwin = lib.mkIf pkgs.stdenv.isDarwin {
+    # nix-darwin
+    (lib.mkIf pkgs.stdenv.isDarwin {
       services.tailscale = {
         enable = true;
         package = pkgs.tailscale;
-        # Open the macOS Application Firewall automatically
         openFirewall = true;
-        extraUpFlags = config.tailscaleUpFlags;
-        extraDaemonFlags = cfg.extraDaemonFlags;
-        # If provided, use an auth key file on first start
-        authKeyFile = lib.mkIf (cfg.authKeyFile != null) cfg.authKeyFile;
+        extraUpFlags = tailscaleUpFlags;
       };
-    };
+    })
 
-    #### NixOS ####
-    # maps to systemd service and nftables/iptables firewall
-    nixos = lib.mkIf pkgs.stdenv.isLinux {
+    # NixOS
+    (lib.mkIf pkgs.stdenv.isLinux {
       services.tailscale = {
         enable = true;
         package = pkgs.tailscale;
         openFirewall = true;
-        extraUpFlags = config.tailscaleUpFlags;
+        extraUpFlags = tailscaleUpFlags;
         extraDaemonFlags = cfg.extraDaemonFlags;
         authKeyFile = lib.mkIf (cfg.authKeyFile != null) cfg.authKeyFile;
-        # Optional: simplified routing knob on NixOS, align with our booleans
         useRoutingFeatures =
           if cfg.advertiseExitNode then "server"
           else if cfg.acceptRoutes then "client"
           else "none";
       };
-    };
-  };
+    })
+  ]);
 }
