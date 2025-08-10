@@ -15,12 +15,8 @@
     thefuck git wget curl gnupg direnv python3
     nodejs unzip python312 uv
 
-    anki-bin
-    brave
     discord
     jetbrains.goland
-    signal-desktop-bin
     spotify
-    tailscale
   ];
 }
