@@ -15,7 +15,7 @@
     thefuck git wget curl gnupg direnv python3
     nodejs unzip python312 uv
 
-    anki
+    anki-bin
     brave
     discord
     jetbrains.goland
@@ -23,11 +23,4 @@
     spotify
     tailscale
   ];
-
-
-  programs.git = {
-    enable     = true;
-    userName   = "Oliver McInnes";
-    userEmail  = "olivermcinnes@example.com";
-  };
 }
