@@ -16,6 +16,8 @@
     useSSH = true;
     acceptRoutes = true;
     advertiseExitNode = false;
+    extraUpFlags = [ ];
+    extraDaemonFlags = [ ];
   };
 
   home.packages = with pkgs; [
