@@ -35,8 +35,6 @@
       export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
       export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
       export FZF_COMPLETION_TRIGGER='**'
-
-      eval $(thefuck --alias)
     '';
   };
 
@@ -45,11 +43,16 @@
     enableZshIntegration = true;
   };
 
+  programs.thefuck = {
+    enable = true;
+    enableZshIntegration = true;
+  }
+
   xdg.configFile."starship.toml".source = ./zsh/starship.toml;
 
   programs.fzf = { enable = true; enableZshIntegration = true; };
   programs.direnv = { enable = true; nix-direnv.enable = true; };
   programs.zoxide = { enable = true; enableZshIntegration = true; };
 
-  home.packages = with pkgs; [ eza bat ripgrep fd lazygit thefuck ];
+  home.packages = with pkgs; [ eza bat ripgrep fd lazygit ];
 }
