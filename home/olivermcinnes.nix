@@ -7,6 +7,7 @@
     ./modules/zsh.nix
     ./modules/neovim.nix
     ./modules/kitty.nix
+    ./modules/go.nix
   ];
 
   home.packages = with pkgs; [
