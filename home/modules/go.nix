@@ -1,8 +1,7 @@
 {
   programs.go = {
     enable = true;
-    # optional: set a custom GOPATH
-    goPath = "${config.home.homeDirectory}/go";
+    goPath = "~/go";  # no need for ${config...}
   };
 
   home.sessionPath = [
