@@ -1,0 +1,7 @@
+.idea/
+
+result
+*.drv
+
+.DS_Store
+*.swp

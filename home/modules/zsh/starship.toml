@@ -1,0 +1,80 @@
+# ---- pochi-ish starship theme ----
+add_newline = true
+palette = "pochi"
+
+format = """
+[╭](fg:gray)$directory$git_branch$git_status$nix_shell$nodejs$python$rust$golang$cmd_duration
+[╰ ](fg:pink)
+"""
+
+right_format = "$time"
+
+[palettes.pochi]
+bg     = "#0d0014"
+fg     = "#e7d8ef"
+gray   = "#3c5155"
+pink   = "#ff339c"
+cyan   = "#22e7ff"
+violet = "#9058ff"
+
+[directory]
+style = "bold fg:fg"
+truncation_length = 3
+truncate_to_repo = true
+truncation_symbol = "…/"
+
+[git_branch]
+symbol = " "
+style = "fg:pink"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "fg:cyan"
+format = "([$all_status$ahead_behind]($style) )"
+conflicted = " "
+ahead = "⇡${count} "
+behind = "⇣${count} "
+modified = "● "
+staged = "✔ "
+untracked = "… "
+stashed = "✚ "
+
+[nix_shell]
+symbol = " "
+style = "fg:violet"
+format = "[$symbol$state]($style) "
+
+[cmd_duration]
+min_time = 1500
+style = "fg:gray"
+format = "[$duration]($style) "
+
+[nodejs]
+symbol = " "
+style = "fg:cyan"
+format = "[$symbol$version]($style) "
+
+[python]
+symbol = " "
+style = "fg:cyan"
+format = "[$symbol$version]($style) "
+
+[rust]
+symbol = "🦀 "
+style = "fg:cyan"
+format = "[$symbol$version]($style) "
+
+[golang]
+symbol = " "
+style = "fg:cyan"
+format = "[$symbol$version]($style) "
+
+[time]
+disabled = false
+time_format = "%H:%M"
+style = "fg:gray"
+format = "[$time]($style)"
+
+[character]
+success_symbol = "[❯](fg:pink)"
+error_symbol   = "[❯](fg:pink)"
