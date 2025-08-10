@@ -14,5 +14,7 @@
     shell = pkgs.zsh;
   };
 
+  services.tailscale.enable = true;
+
   system.stateVersion = 6;
 }

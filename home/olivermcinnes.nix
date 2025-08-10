@@ -8,17 +8,7 @@
     ./modules/neovim.nix
     ./modules/kitty.nix
     ./modules/go.nix
-    ./modules/tailscale.nix
   ];
-
-  my.tailscale = {
-    enable = true;
-    useSSH = true;
-    acceptRoutes = true;
-    advertiseExitNode = false;
-    extraUpFlags = [ ];
-    extraDaemonFlags = [ ];
-  };
 
   home.packages = with pkgs; [
     go gh fd ripgrep jq tree magic-wormhole
