@@ -46,7 +46,7 @@
   programs.thefuck = {
     enable = true;
     enableZshIntegration = true;
-  }
+  };
 
   xdg.configFile."starship.toml".source = ./zsh/starship.toml;
 
