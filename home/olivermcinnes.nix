@@ -19,7 +19,7 @@
     brave
     discord
     jetbrains.goland
-    signal-desktop
+    signal-desktop-bin
     spotify
     tailscale
   ];
