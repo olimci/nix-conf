@@ -16,7 +16,6 @@
     nodejs unzip python312 uv
 
     discord
-    jetbrains.goland
     spotify
   ];
 }
