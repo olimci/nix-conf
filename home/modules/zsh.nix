@@ -26,8 +26,8 @@
 
       eval "$(direnv hook zsh)"
 
-      alias ls="eza -lah --icons"
-      alias lsa="eza -a --icons"
+      alias lsa="eza -lah --icons"
+      alias ls="eza -a --icons"
       alias lg="lazygit"
       alias cat="bat --paging=never"
       alias grep="rg -n --hidden --smart-case"
