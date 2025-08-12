@@ -9,7 +9,7 @@
       enable_audio_bell = "no";
       tab_bar_style = "powerline";
       tab_powerline_style = "slanted";
-      tab_title_template = "{index}";
+      tab_title_template = "{title}";
       tab_bar_min_tabs = "0";
       shell = ".";
       editor = "nvim";
