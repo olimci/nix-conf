@@ -26,11 +26,14 @@
 
       eval "$(direnv hook zsh)"
 
-      alias ll="eza -lah --icons"
-      alias la="eza -a --icons"
+      alias ls="eza -lah --icons"
+      alias lsa="eza -a --icons"
       alias lg="lazygit"
       alias cat="bat --paging=never"
       alias grep="rg -n --hidden --smart-case"
+
+      alias icat="kitty +kitten icat"
+      alias kssh="kitty +kitten ssh"
 
       export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
       export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

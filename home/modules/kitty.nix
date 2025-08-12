@@ -12,7 +12,6 @@
       tab_title_template = "{title}";
       tab_bar_min_tabs = "0";
       shell = ".";
-      editor = "nvim";
       shell_integration = "enabled";
 
       font_family = ''family="JetBrainsMono Nerd Font Mono"'';
@@ -37,6 +36,7 @@
 
     extraConfig = ''
       include theme.conf
+      editor nvim
     '';
   };
 
