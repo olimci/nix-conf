@@ -13,9 +13,6 @@
   home.packages = with pkgs; [
     go gh fd ripgrep jq tree magic-wormhole
     thefuck git wget curl gnupg direnv python3
-    nodejs unzip python312 uv
-
-    discord
-    spotify
+    nodejs unzip python312 unzip codex
   ];
 }
